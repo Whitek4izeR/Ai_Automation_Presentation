@@ -1,0 +1,158 @@
+# Zapier AI Prompt Template
+# Workflow 02 — AI Lead Scoring
+# Version: v3 — Loop Fixed
+# Updated: 2026-02
+
+# ══════════════════════════════════════════
+# LOOP FIX SUMMARY
+# ══════════════════════════════════════════
+#
+# PROBLEM: "New or Updated Contact" trigger re-fired every time
+#          Step 6 wrote the AI score back to the contact record.
+#          This caused duplicate Slack messages + duplicate Sheets rows.
+#
+# FIX 1:   Change Step 1 trigger to "New Contact"
+#           → Only fires once on creation, not on field updates
+#
+# FIX 2:   Add second condition to Step 5 Filter:
+#           Condition 1: Contact ID (Step 4)     → Exists
+#           Condition 2: AI Lead Score (Step 4)  → Does Not Exist
+#           → If contact already scored, Zap stops silently
+
+
+# ══════════════════════════════════════════
+# STEP 1 — ACTIVECAMPAIGN TRIGGER
+# ══════════════════════════════════════════
+
+# Event:  New Contact   ← use this ONLY (not "New or Updated")
+# List:   New Leads
+
+
+# ══════════════════════════════════════════
+# STEP 2 — CODE BY ZAPIER (Javascript)
+# ══════════════════════════════════════════
+
+# INPUT DATA KEYS (add in Zapier UI):
+# Key          → Map from Step 1
+# firstName    → Contact First Name
+# lastName     → Contact Last Name
+# email        → Contact Email Address
+# jobTitle     → Job Title
+# company      → Company
+# leadSource   → Lead Source
+
+# JAVASCRIPT CODE:
+output = {
+  prompt: `Contact Name: ${inputData.firstName || 'Not provided'} ${inputData.lastName || ''}
+Email: ${inputData.email || 'Not provided'}
+Job Title: ${inputData.jobTitle || 'Not provided'}
+Company: ${inputData.company || 'Not provided'}
+Lead Source: ${inputData.leadSource || 'Not provided'}`
+};
+
+
+# ══════════════════════════════════════════
+# STEP 3 — AI BY ZAPIER PROMPT
+# ══════════════════════════════════════════
+
+You are a B2B lead scoring specialist. Evaluate the lead and return JSON only.
+No explanation, no markdown, no extra text.
+
+Scoring criteria:
+- Job title seniority: C-suite/VP/Director = higher score
+- Company domain: enterprise/known brand = higher score
+- Lead source: demo-request/referral = higher than newsletter/organic
+- Decision-maker roles score higher than practitioners
+
+[map → prompt output from Code by Zapier Step 2]
+
+Return exactly this JSON structure:
+{
+  "score": <integer 1-100>,
+  "persona": "<decision_maker|influencer|practitioner|researcher>",
+  "sequence": "<high-intent-fast-track|standard-nurture|cold-drip>",
+  "reason": "<one sentence explanation>"
+}
+
+# NOTE: AI by Zapier auto-parses JSON — Score, Persona, Sequence, Reason
+#       available as separate fields. No extra Code parser needed.
+
+
+# ══════════════════════════════════════════
+# STEP 5 — FILTER BY ZAPIER (DOUBLE FILTER)
+# ══════════════════════════════════════════
+
+# Condition 1:
+#   Field:      Contact ID (from Step 4 Find Contact)
+#   Condition:  Exists
+#   Value:      (leave blank)
+
+# Condition 2:  ← NEW — prevents re-scoring loop
+#   Field:      AI Lead Score (from Step 4 Find Contact)
+#   Condition:  Does not exist
+#   Value:      (leave blank)
+
+# Result:
+#   Both TRUE  → Contact found + not yet scored → proceed ✅
+#   Cond 1 FALSE → Contact not found → Zap stops silently 🛑
+#   Cond 2 FALSE → Already has AI score → Zap stops silently 🛑
+
+
+# ══════════════════════════════════════════
+# STEP 7 — PATHS ROUTING
+# ══════════════════════════════════════════
+
+# Path A (Hot):   Score >= 70  →  Slack #sales-hot-leads + Sheets + AC Tag
+# Path B (Warm):  Score >= 40  →  Slack #sales-pipeline  + Sheets + AC Tag
+# Path C (Cold):  Fallback     →  Sheets + AC Tag only (no Slack)
+
+
+# ══════════════════════════════════════════
+# SLACK MESSAGE TEMPLATES
+# ══════════════════════════════════════════
+
+# Step 9 — Hot (#sales-hot-leads):
+🔥 HOT LEAD ALERT — Score: [Score]/100
+👤 [First Name] [Last Name]
+💼 [Job Title] @ [Company]
+📧 [Email]
+🤖 Persona: [Persona]
+📋 Reason: [Reason]
+📨 Sequence: [Sequence]
+
+# Step 13 — Warm (#sales-pipeline):
+⚡ WARM LEAD — Score: [Score]/100
+👤 [First Name] [Last Name]
+💼 [Job Title] @ [Company]
+📧 [Email]
+📨 Sequence: [Sequence]
+
+
+# ══════════════════════════════════════════
+# GOOGLE SHEETS COLUMNS (Steps 10, 14, 17)
+# ══════════════════════════════════════════
+
+# A: Timestamp    B: First Name   C: Last Name    D: Email
+# E: Job Title    F: Company      G: Lead Source
+# H: AI Score     I: AI Persona   J: AI Sequence  K: AI Reason
+# L: Tier  →  type manually: HOT / WARM / COLD
+
+
+# ══════════════════════════════════════════
+# AC TAGS (Steps 11, 15, 18)
+# ══════════════════════════════════════════
+
+# Step 11 (Hot):  sequence-hot-track
+# Step 15 (Warm): sequence-standard-nurture
+# Step 18 (Cold): sequence-cold-drip
+
+
+# ══════════════════════════════════════════
+# AC CUSTOM FIELDS (create in AC first)
+# Lists → Manage Fields → Add Field
+# ══════════════════════════════════════════
+
+# AI Lead Score  →  Number
+# AI Persona     →  Text
+# AI Sequence    →  Text
+# AI Reason      →  Textarea

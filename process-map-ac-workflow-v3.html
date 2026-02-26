@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AC Lead Scoring — Process Map v3 (Loop Fixed)</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f5f0e8; font-family: 'Caveat', cursive; min-height: 100vh; overflow-x: auto; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(160,140,100,0.07) 28px),
+      repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(160,140,100,0.05) 28px);
+    pointer-events: none; z-index: 0;
+  }
+  .canvas { position: relative; width: 1540px; min-height: 1100px; margin: 0 auto; z-index: 1; padding-bottom: 60px; }
+  .node {
+    position: absolute; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 10px 12px;
+    font-family: 'Caveat', cursive; font-size: 15px; font-weight: 600; line-height: 1.35;
+    z-index: 2; border: 2.5px solid rgba(0,0,0,0.52);
+    box-shadow: 3px 4px 0px rgba(0,0,0,0.16); cursor: default;
+    transition: transform 0.15s;
+  }
+  .node:hover { transform: translateY(-2px); }
+  .green  { background: #b5e8b0; }
+  .blue   { background: #a8cff5; }
+  .pink   { background: #f5a8b8; }
+  .yellow { background: #f7e08a; }
+  .orange { background: #f7c89a; }
+  .teal   { background: #a8e8dd; }
+  .white  { background: #ffffff; }
+  .label { position: absolute; font-family: 'Caveat', cursive; font-size: 13px; color: #555; text-align: center; z-index: 2; white-space: nowrap; }
+  .label.app { font-weight: 700; color: #333; }
+  .step-num {
+    position: absolute; width: 22px; height: 22px; border-radius: 50%;
+    background: #444; color: #fff; font-family: 'Caveat', cursive;
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; z-index: 5;
+  }
+  .note-box {
+    position: absolute; background: #fffef5;
+    border: 2px solid rgba(0,0,0,0.35); border-radius: 10px;
+    padding: 14px 18px; font-family: 'Caveat', cursive;
+    font-size: 13.5px; line-height: 1.8; color: #333;
+    box-shadow: 3px 4px 0px rgba(0,0,0,0.1); z-index: 2;
+  }
+  .filter-callout {
+    position: absolute; background: #fffbeb;
+    border: 2.5px solid #d97706; border-radius: 10px;
+    padding: 14px 18px; font-family: 'Caveat', cursive;
+    font-size: 13.5px; line-height: 1.9; color: #333;
+    box-shadow: 3px 4px 0px rgba(0,0,0,0.1); z-index: 2;
+  }
+  .loop-badge {
+    position: absolute; background: #fef3c7;
+    border: 1.5px solid #d97706; border-radius: 8px;
+    padding: 5px 14px; font-family: 'Caveat', cursive;
+    font-size: 13px; color: #92400e; z-index: 5;
+  }
+  .path-header {
+    position: absolute; font-family: 'Caveat', cursive;
+    font-size: 16px; font-weight: 700; padding: 5px 20px;
+    border-radius: 20px; border: 2px solid rgba(0,0,0,0.3);
+    z-index: 3; background: #f5f0e8;
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+<!-- TITLE -->
+<div style="position:absolute;top:18px;left:44px;z-index:5;">
+  <div style="font-family:'Caveat',cursive;font-size:24px;font-weight:700;color:#1a1a1a;">
+    Workflow 02 — AI-Powered Lead Scoring & Nurture <span style="color:#c0392b;font-size:18px;">(v3 — Loop Fixed)</span>
+  </div>
+  <div style="font-family:'Caveat',cursive;font-size:14px;color:#888;margin-top:2px;">
+    ActiveCampaign · Code by Zapier · AI by Zapier · Filter by Zapier · Paths · Slack · Google Sheets
+  </div>
+</div>
+
+<!-- LOOP FIX BADGE -->
+<div class="loop-badge" style="left:44px;top:70px;">
+  🔁 Loop Fix: Trigger → "New Contact" &nbsp;+&nbsp; Double Filter at Step 5
+</div>
+
+<!-- ═══ SVG ARROWS ═══ -->
+<svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ah"  markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#444"/></marker>
+    <marker id="ar"  markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#c0392b"/></marker>
+    <marker id="ao"  markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#d97706"/></marker>
+    <marker id="ab"  markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#2980b9"/></marker>
+  </defs>
+
+  <!-- Main flow vertical arrows -->
+  <line x1="168" y1="163" x2="168" y2="196" stroke="#444" stroke-width="2.2" marker-end="url(#ah)"/>
+  <line x1="168" y1="261" x2="168" y2="294" stroke="#444" stroke-width="2.2" marker-end="url(#ah)"/>
+  <line x1="168" y1="359" x2="168" y2="392" stroke="#444" stroke-width="2.2" marker-end="url(#ah)"/>
+  <line x1="168" y1="457" x2="168" y2="490" stroke="#444" stroke-width="2.2" marker-end="url(#ah)"/>
+  <line x1="168" y1="555" x2="168" y2="588" stroke="#444" stroke-width="2.2" marker-end="url(#ah)"/>
+  <line x1="168" y1="653" x2="168" y2="686" stroke="#444" stroke-width="2.2" marker-end="url(#ah)"/>
+
+  <!-- Filter callout arrow -->
+  <line x1="292" y1="522" x2="336" y2="530" stroke="#d97706" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#ao)"/>
+
+  <!-- Filter error → End (dashed red) -->
+  <path d="M 292 536 Q 380 536 380 600 Q 380 630 360 640"
+        fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#ar)"/>
+  <text x="386" y="590" font-family="Caveat,cursive" font-size="11" fill="#c0392b">not found /</text>
+  <text x="386" y="603" font-family="Caveat,cursive" font-size="11" fill="#c0392b">already scored</text>
+
+  <!-- Paths split -->
+  <line x1="168" y1="744" x2="168" y2="760" stroke="#444" stroke-width="2.2"/>
+  <line x1="440" y1="760" x2="1120" y2="760" stroke="#444" stroke-width="2.2"/>
+  <line x1="440"  y1="760" x2="440"  y2="784" stroke="#c0392b" stroke-width="2.2" marker-end="url(#ar)"/>
+  <line x1="780"  y1="760" x2="780"  y2="784" stroke="#d97706" stroke-width="2.2" marker-end="url(#ao)"/>
+  <line x1="1120" y1="760" x2="1120" y2="784" stroke="#2980b9" stroke-width="2.2" marker-end="url(#ab)"/>
+
+  <!-- Score labels -->
+  <text x="320" y="756" font-family="Caveat,cursive" font-size="12" fill="#c0392b">score ≥ 70</text>
+  <text x="658" y="756" font-family="Caveat,cursive" font-size="12" fill="#d97706">score 40–69</text>
+  <text x="998"  y="756" font-family="Caveat,cursive" font-size="12" fill="#2980b9">score &lt; 40</text>
+
+  <!-- Hot path arrows -->
+  <line x1="440" y1="834" x2="440" y2="860" stroke="#c0392b" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="440" y1="930" x2="440" y2="956" stroke="#c0392b" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="440" y1="1026" x2="440" y2="1052" stroke="#c0392b" stroke-width="2" marker-end="url(#ar)"/>
+  <!-- Warm path arrows -->
+  <line x1="780" y1="834" x2="780" y2="860" stroke="#d97706" stroke-width="2" marker-end="url(#ao)"/>
+  <line x1="780" y1="930" x2="780" y2="956" stroke="#d97706" stroke-width="2" marker-end="url(#ao)"/>
+  <line x1="780" y1="1026" x2="780" y2="1052" stroke="#d97706" stroke-width="2" marker-end="url(#ao)"/>
+  <!-- Cold path arrows -->
+  <line x1="1120" y1="834" x2="1120" y2="860" stroke="#2980b9" stroke-width="2" marker-end="url(#ab)"/>
+  <line x1="1120" y1="930" x2="1120" y2="956" stroke="#2980b9" stroke-width="2" marker-end="url(#ab)"/>
+</svg>
+
+<!-- ═══ MAIN FLOW NODES ═══ -->
+<!-- y positions: 108,206,304,402,500,598,696 -->
+
+<div class="step-num" style="left:46px;top:110px;">1</div>
+<div class="node green" style="left:50px;top:108px;width:236px;height:55px;">New Contact</div>
+<div class="label app" style="left:50px;top:91px;width:236px;">ActiveCampaign</div>
+<div class="label" style="left:50px;top:170px;width:236px;">Trigger — fires once on creation only</div>
+
+<div class="step-num" style="left:46px;top:208px;">2</div>
+<div class="node orange" style="left:50px;top:206px;width:236px;height:55px;">Run Javascript</div>
+<div class="label app" style="left:50px;top:189px;width:236px;">Code by Zapier</div>
+<div class="label" style="left:50px;top:268px;width:236px;">Builds prompt string</div>
+
+<div class="step-num" style="left:46px;top:306px;">3</div>
+<div class="node yellow" style="left:50px;top:304px;width:236px;height:55px;">Analyze and Return Data</div>
+<div class="label app" style="left:50px;top:287px;width:236px;">AI by Zapier</div>
+<div class="label" style="left:50px;top:366px;width:236px;">LLM and AI Agent</div>
+
+<div class="step-num" style="left:46px;top:404px;">4</div>
+<div class="node blue" style="left:50px;top:402px;width:236px;height:55px;">Find Contact</div>
+<div class="label app" style="left:50px;top:385px;width:236px;">ActiveCampaign</div>
+<div class="label" style="left:50px;top:464px;width:236px;">Search by Email</div>
+
+<div class="step-num" style="left:46px;top:502px;">5</div>
+<div class="node pink" style="left:50px;top:500px;width:236px;height:55px;">Filter conditions</div>
+<div class="label app" style="left:50px;top:483px;width:236px;">Filter by Zapier</div>
+<div class="label" style="left:50px;top:562px;width:236px;">Double safety gate ⚡</div>
+
+<div class="step-num" style="left:46px;top:600px;">6</div>
+<div class="node blue" style="left:50px;top:598px;width:236px;height:55px;">Create or Update Contact</div>
+<div class="label app" style="left:50px;top:581px;width:236px;">ActiveCampaign</div>
+<div class="label" style="left:50px;top:660px;width:236px;">Write AI score, persona, sequence</div>
+
+<div class="step-num" style="left:46px;top:698px;">7</div>
+<div class="node pink" style="left:50px;top:696px;width:236px;height:55px;">Split into paths</div>
+<div class="label app" style="left:50px;top:679px;width:236px;">Paths by Zapier</div>
+<div class="label" style="left:50px;top:758px;width:236px;">Routes by AI Score</div>
+
+<!-- ═══ FILTER CALLOUT ═══ -->
+<div class="filter-callout" style="left:336px;top:476px;width:430px;">
+  <div style="font-weight:700;font-size:15px;color:#92400e;margin-bottom:6px;">⚡ Step 5 — Double Safety Gate</div>
+  <div style="color:#555;">
+    Condition 1: &nbsp;Contact ID (Step 4) &nbsp;&nbsp;&nbsp;<strong>→ Exists</strong><br>
+    Condition 2: &nbsp;AI Lead Score (Step 4) &nbsp;<strong style="color:#c0392b;">→ Does Not Exist</strong><br>
+    <br>
+    <span style="color:#27ae60;font-weight:600;">→ Both TRUE</span> = contact found &amp; not yet scored = proceed<br>
+    <span style="color:#c0392b;font-weight:600;">→ Either FALSE</span> = Zap stops silently (no error)
+  </div>
+</div>
+
+<!-- END node -->
+<div class="node white" style="left:288px;top:618px;width:130px;height:50px;font-size:14px;">End</div>
+<div class="label" style="left:288px;top:675px;width:130px;font-size:12px;color:#c0392b;">Error Handler &amp;<br>Fallback</div>
+
+<!-- ═══ PATH HEADERS ═══ -->
+<div class="path-header" style="left:355px;top:784px;color:#c0392b;border-color:#c0392b;">🔥 Hot Lead</div>
+<div class="path-header" style="left:695px;top:784px;color:#d97706;border-color:#d97706;">⚡ Warm Lead</div>
+<div class="path-header" style="left:1035px;top:784px;color:#2980b9;border-color:#2980b9;">❄️ Cold Lead</div>
+
+<!-- ═══ HOT PATH: 8,9,10,11 ═══ -->
+<div class="step-num" style="left:330px;top:812px;">8</div>
+<div class="node pink" style="left:334px;top:810px;width:212px;height:44px;font-size:13px;border-color:#c0392b;">Path conditions</div>
+<div class="label app" style="left:334px;top:795px;width:212px;font-size:11px;color:#c0392b;">Paths · score ≥ 70</div>
+
+<div class="step-num" style="left:330px;top:872px;">9</div>
+<div class="node teal" style="left:334px;top:870px;width:212px;height:60px;font-size:13px;border-color:#c0392b;">
+  Send Channel Message<br><span style="font-size:11px;font-weight:400;">#sales-hot-leads</span>
+</div>
+<div class="label app" style="left:334px;top:854px;width:212px;font-size:11px;">Slack</div>
+
+<div class="step-num" style="left:330px;top:968px;">10</div>
+<div class="node teal" style="left:334px;top:966px;width:212px;height:60px;font-size:13px;border-color:#c0392b;">
+  Create Spreadsheet Row<br><span style="font-size:11px;font-weight:400;">Tier: HOT</span>
+</div>
+<div class="label app" style="left:334px;top:950px;width:212px;font-size:11px;">Google Sheets</div>
+
+<div class="step-num" style="left:330px;top:1064px;">11</div>
+<div class="node blue" style="left:334px;top:1062px;width:212px;height:60px;font-size:13px;border-color:#c0392b;">
+  Add/Remove Tag<br><span style="font-size:11px;font-weight:400;">sequence-hot-track</span>
+</div>
+<div class="label app" style="left:334px;top:1046px;width:212px;font-size:11px;">ActiveCampaign</div>
+
+<!-- ═══ WARM PATH: 12,13,14,15 ═══ -->
+<div class="step-num" style="left:674px;top:812px;">12</div>
+<div class="node pink" style="left:678px;top:810px;width:212px;height:44px;font-size:13px;border-color:#d97706;">Path conditions</div>
+<div class="label app" style="left:678px;top:795px;width:212px;font-size:11px;color:#d97706;">Paths · score 40–69</div>
+
+<div class="step-num" style="left:674px;top:872px;">13</div>
+<div class="node teal" style="left:678px;top:870px;width:212px;height:60px;font-size:13px;border-color:#d97706;">
+  Send Channel Message<br><span style="font-size:11px;font-weight:400;">#sales-pipeline</span>
+</div>
+<div class="label app" style="left:678px;top:854px;width:212px;font-size:11px;">Slack</div>
+
+<div class="step-num" style="left:674px;top:968px;">14</div>
+<div class="node teal" style="left:678px;top:966px;width:212px;height:60px;font-size:13px;border-color:#d97706;">
+  Create Spreadsheet Row<br><span style="font-size:11px;font-weight:400;">Tier: WARM</span>
+</div>
+<div class="label app" style="left:678px;top:950px;width:212px;font-size:11px;">Google Sheets</div>
+
+<div class="step-num" style="left:674px;top:1064px;">15</div>
+<div class="node blue" style="left:678px;top:1062px;width:212px;height:60px;font-size:13px;border-color:#d97706;">
+  Add/Remove Tag<br><span style="font-size:11px;font-weight:400;">sequence-standard-nurture</span>
+</div>
+<div class="label app" style="left:678px;top:1046px;width:212px;font-size:11px;">ActiveCampaign</div>
+
+<!-- ═══ COLD PATH: 16,17,18 ═══ -->
+<div class="step-num" style="left:1014px;top:812px;">16</div>
+<div class="node pink" style="left:1018px;top:810px;width:212px;height:44px;font-size:13px;border-color:#2980b9;">Path conditions</div>
+<div class="label app" style="left:1018px;top:795px;width:212px;font-size:11px;color:#2980b9;">Paths · fallback (&lt;40)</div>
+
+<div style="position:absolute;left:1018px;top:860px;font-family:'Caveat',cursive;font-size:12px;color:#2980b9;font-style:italic;z-index:4;">
+  ✗ No Slack alert — fully automated
+</div>
+
+<div class="step-num" style="left:1014px;top:880px;">17</div>
+<div class="node teal" style="left:1018px;top:878px;width:212px;height:60px;font-size:13px;border-color:#2980b9;">
+  Create Spreadsheet Row<br><span style="font-size:11px;font-weight:400;">Tier: COLD</span>
+</div>
+<div class="label app" style="left:1018px;top:862px;width:212px;font-size:11px;">Google Sheets</div>
+
+<div class="step-num" style="left:1014px;top:958px;">18</div>
+<div class="node blue" style="left:1018px;top:956px;width:212px;height:60px;font-size:13px;border-color:#2980b9;">
+  Add/Remove Tag<br><span style="font-size:11px;font-weight:400;">sequence-cold-drip</span>
+</div>
+<div class="label app" style="left:1018px;top:940px;width:212px;font-size:11px;">ActiveCampaign</div>
+
+<!-- ═══ NOTES ═══ -->
+<div class="note-box" style="left:800px;top:96px;width:680px;">
+  <div style="font-weight:700;font-size:15px;color:#1a5276;margin-bottom:6px;">🔁 Why This Prevents Loops:</div>
+  1. "New Contact" only fires once on creation — not on every field update<br>
+  2. Filter Condition 1: Contact ID exists → confirms AC found the contact<br>
+  3. Filter Condition 2: AI Lead Score does not exist → not yet scored<br>
+  <span style="color:#c0392b;">→ Even if trigger fires unexpectedly, if score already exists the Zap stops silently</span>
+</div>
+
+<div class="note-box" style="left:800px;top:260px;width:680px;">
+  <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Notes:</div>
+  a. AI by Zapier auto-parses JSON — Score, Persona, Sequence, Reason ready to map directly<br>
+  b. Hot &amp; Warm paths include Slack alert · Cold is fully automated (no Slack)<br>
+  c. Paths evaluate top-to-bottom: Hot first (≥70), then Warm (40–69), Cold is fallback<br>
+  d. 18 total steps · Tool: excalidraw.com
+</div>
+
+<!-- LEGEND -->
+<div class="note-box" style="left:800px;top:410px;width:430px;">
+  <div style="font-weight:700;font-size:15px;margin-bottom:8px;">Legend:</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+    <div style="display:flex;align-items:center;gap:6px;width:185px;margin-bottom:5px;">
+      <div style="width:20px;height:14px;background:#b5e8b0;border:1.5px solid #555;border-radius:3px;flex-shrink:0;"></div><span style="font-size:13px;">Trigger (New Contact)</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;width:185px;margin-bottom:5px;">
+      <div style="width:20px;height:14px;background:#f7c89a;border:1.5px solid #555;border-radius:3px;flex-shrink:0;"></div><span style="font-size:13px;">Code by Zapier</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;width:185px;margin-bottom:5px;">
+      <div style="width:20px;height:14px;background:#f7e08a;border:1.5px solid #555;border-radius:3px;flex-shrink:0;"></div><span style="font-size:13px;">LLM / AI Agent</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;width:185px;margin-bottom:5px;">
+      <div style="width:20px;height:14px;background:#a8cff5;border:1.5px solid #555;border-radius:3px;flex-shrink:0;"></div><span style="font-size:13px;">AC Action</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;width:185px;margin-bottom:5px;">
+      <div style="width:20px;height:14px;background:#f5a8b8;border:1.5px solid #555;border-radius:3px;flex-shrink:0;"></div><span style="font-size:13px;">Filter / Path</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;width:185px;margin-bottom:5px;">
+      <div style="width:20px;height:14px;background:#a8e8dd;border:1.5px solid #555;border-radius:3px;flex-shrink:0;"></div><span style="font-size:13px;">Slack / Sheets</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 # AI-Powered Lead Scoring & Nurture Automation
-### Workflow 02 — ActiveCampaign + Zapier + AI by Zapier
+### Workflow  — ActiveCampaign + Zapier + AI by Zapier
 
 > **Stack:** ActiveCampaign · Code by Zapier · AI by Zapier · Filter by Zapier · Paths by Zapier · Slack · Google Sheets
 > **Total Steps:** 18

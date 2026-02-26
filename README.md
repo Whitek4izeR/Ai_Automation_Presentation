@@ -60,26 +60,26 @@ This automation eliminates manual lead triage by using AI to score every new con
 ┌─────────────────────────────────────────────────────────┐
 │              ZAPIER ORCHESTRATION                       │
 │  Step 1: Receive AC trigger                             │
-│  Step 2: Formatter — build prompt string               │
+│  Step 2: Formatter — build prompt string                │
 └────────────────────────┬────────────────────────────────┘
                          │ Structured prompt
                          ▼
 ┌─────────────────────────────────────────────────────────┐
 │              AI CLASSIFICATION                          │
-│  OpenAI GPT-3.5-turbo                                  │
-│  Returns: { score, persona, sequence, reason }         │
+│  OpenAI GPT-3.5-turbo                                   |
+│  Returns: { score, persona, sequence, reason }          │
 └────────────────────────┬────────────────────────────────┘
                          │ JSON response parsed
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│              CRM UPDATE (AC)                           │
+│              CRM UPDATE (AC)                            │
 │  Write score, persona tag, sequence to contact record   │
 └────────────────────────┬────────────────────────────────┘
                          │ Score evaluated
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│              ROUTING (Zapier Paths)                    │
-│  score ≥ 70 → HOT   │  40-69 → WARM   │  <40 → COLD   │
+│              ROUTING (Zapier Paths)                     │
+│  score ≥ 70 → HOT   │  40-69 → WARM   │  <40 → COLD     │
 └──────┬───────────────┴────────┬─────────┴──────┬────────┘
        │                        │                 │
        ▼                        ▼                 ▼

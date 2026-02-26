@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActiveCampaign Lead Nurture Automation — Process Map</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Clash+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --border: #e8e4dc;
+    --border2: #d0cac0;
+    --ac: #356ae6;
+    --ac-light: #eef2fd;
+    --zapier: #ff4a00;
+    --zapier-light: #fff1ec;
+    --openai: #10a37f;
+    --openai-light: #edf8f5;
+    --slack: #4a154b;
+    --slack-light: #f5edf5;
+    --sheets: #0f9d58;
+    --sheets-light: #edf7f2;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #1a1714;
+    --muted: #7a7068;
+    --mono: 'IBM Plex Mono', monospace;
+    --display: 'Clash Display', 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    min-height: 100vh;
+  }
+
+  /* Subtle dot grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, #c8c0b4 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 52px 28px 80px;
+  }
+
+  /* ── Header ── */
+  .header {
+    margin-bottom: 52px;
+    animation: fadeIn 0.5s ease both;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ac);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: clamp(26px, 4.5vw, 40px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 10px;
+  }
+
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface);
+  }
+
+  .meta-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ── Overview banner ── */
+  .overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 52px;
+    animation: fadeIn 0.5s 0.1s ease both;
+  }
+
+  .ov-cell {
+    background: var(--surface);
+    padding: 18px 20px;
+  }
+
+  .ov-num {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 2px;
+  }
+
+  .ov-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── Section heading ── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .section-head h2 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .section-head::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Flow ── */
+  .flow-area {
+    animation: fadeIn 0.5s 0.15s ease both;
+    margin-bottom: 56px;
+  }
+
+  .flow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Node card */
+  .node {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    position: relative;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+  }
+
+  .node.ac-node     { border-color: var(--ac); }
+  .node.zapier-node { border-color: var(--zapier); }
+  .node.ai-node     { border-color: var(--openai); }
+  .node.decision    { border-color: var(--warn); max-width: 620px; width: 100%; }
+  .node.output-node { border-color: var(--sheets); }
+
+  .node-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+
+  .node-icon-wrap {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .ac-node .node-icon-wrap     { background: var(--ac-light); }
+  .zapier-node .node-icon-wrap { background: var(--zapier-light); }
+  .ai-node .node-icon-wrap     { background: var(--openai-light); }
+  .decision .node-icon-wrap    { background: #fef3c7; }
+  .output-node .node-icon-wrap { background: var(--sheets-light); }
+
+  .node-meta { flex: 1; }
+
+  .node-step {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+
+  .node-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .ac-node .node-title     { color: var(--ac); }
+  .zapier-node .node-title { color: var(--zapier); }
+  .ai-node .node-title     { color: var(--openai); }
+  .decision .node-title    { color: var(--warn); }
+  .output-node .node-title { color: var(--sheets); }
+
+  .node-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-left: 50px;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+    margin-left: 50px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    background: var(--bg);
+  }
+
+  .tag.ac     { border-color: #b0c4f5; color: var(--ac); background: var(--ac-light); }
+  .tag.zapier { border-color: #ffc4ae; color: var(--zapier); background: var(--zapier-light); }
+  .tag.green  { border-color: #a7dfc9; color: var(--openai); background: var(--openai-light); }
+  .tag.warn   { border-color: #fcd34d; color: #92400e; background: #fef3c7; }
+
+  /* Connector */
+  .conn {
+    width: 2px;
+    height: 36px;
+    background: linear-gradient(to bottom, var(--border2), var(--border));
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .conn::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--border2);
+  }
+
+  .conn-label {
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+
+  /* Paths */
+  .paths-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin: 16px 0 14px;
+  }
+
+  .paths-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .path-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: transform 0.2s;
+  }
+
+  .path-card:hover { transform: translateY(-2px); }
+
+  .path-card.hot   { border-color: #f87171; }
+  .path-card.warm  { border-color: var(--warn); }
+  .path-card.cold  { border-color: #818cf8; }
+
+  .path-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .path-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .hot .path-dot   { background: #f87171; }
+  .warm .path-dot  { background: var(--warn); }
+  .cold .path-dot  { background: #818cf8; }
+
+  .path-name {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .hot .path-name  { color: #dc2626; }
+  .warm .path-name { color: #d97706; }
+  .cold .path-name { color: #4f46e5; }
+
+  .path-cond {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    border-left: 2px solid;
+  }
+
+  .hot .path-cond  { border-color: #f87171; }
+  .warm .path-cond { border-color: var(--warn); }
+  .cold .path-cond { border-color: #818cf8; }
+
+  .path-steps { display: flex; flex-direction: column; gap: 4px; }
+
+  .path-step {
+    font-size: 10.5px;
+    color: var(--muted);
+    display: flex;
+    gap: 5px;
+  }
+
+  .path-step::before { content: '·'; opacity: 0.4; }
+
+  /* Timeline / AC sequence */
+  .timeline {
+    width: 100%;
+    margin-bottom: 56px;
+    animation: fadeIn 0.5s 0.2s ease both;
+  }
+
+  .tl-row {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+
+  .tl-row::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--ac), #c7d5f8);
+  }
+
+  .tl-item {
+    display: flex;
+    gap: 18px;
+    padding: 0 0 28px 0;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .tl-item:last-child { padding-bottom: 0; }
+
+  .tl-dot-wrap {
+    width: 40px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 2px;
+  }
+
+  .tl-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--ac);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--ac);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .tl-content {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    transition: box-shadow 0.2s;
+  }
+
+  .tl-content:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+
+  .tl-trigger {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ac);
+    margin-bottom: 4px;
+  }
+
+  .tl-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .tl-desc {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .tl-delay {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--ac-light);
+    color: var(--ac);
+    border: 1px solid #b0c4f5;
+  }
+
+  /* Wireframes */
+  .wf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    animation: fadeIn 0.5s 0.25s ease both;
+    margin-bottom: 56px;
+  }
+
+  .wf-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .wf-bar {
+    background: #f5f3ef;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wf-circles { display: flex; gap: 5px; }
+  .wf-circle {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--border2);
+  }
+
+  .wf-bar-title {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .wf-body { padding: 16px; }
+
+  /* AC contact card wireframe */
+  .contact-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contact-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--ac-light);
+    border: 2px solid var(--ac);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .contact-name { font-size: 13px; font-weight: 700; }
+  .contact-email { font-family: var(--mono); font-size: 9px; color: var(--muted); }
+
+  .score-bar-wrap { margin-bottom: 12px; }
+  .score-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .score-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .score-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(to right, var(--ac), #60a5fa);
+  }
+
+  .ac-tags-wrap { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .ac-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .ac-tag.blue   { background: var(--ac-light); color: var(--ac); border: 1px solid #b0c4f5; }
+  .ac-tag.green  { background: var(--openai-light); color: var(--openai); border: 1px solid #a7dfc9; }
+  .ac-tag.orange { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+
+  .ac-seq-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+  .ac-seq-row:last-child { border-bottom: none; }
+  .ac-seq-icon { font-size: 13px; }
+  .ac-seq-status {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 8px;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+  .sent  { background: #d1fae5; color: #065f46; }
+  .queue { background: #fef3c7; color: #92400e; }
+  .wait  { background: #e0e7ff; color: #3730a3; }
+
+  /* Zapier steps wireframe */
+  .zap-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .zap-step:last-child { border-bottom: none; }
+
+  .zap-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--zapier-light);
+    border: 1px solid #ffc4ae;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--zapier);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .zap-content { flex: 1; }
+  .zap-app { font-family: var(--mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .zap-action { font-size: 11px; font-weight: 600; margin: 1px 0; }
+  .zap-detail { font-size: 10px; color: var(--muted); }
+  .zap-status {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .live { background: #10b981; box-shadow: 0 0 6px #10b981; }
+  .config { background: var(--warn); }
+
+  /* Slack wireframe */
+  .slack-channel {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--slack);
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .slack-msg {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .slack-msg:last-child { border-bottom: none; }
+
+  .slack-av {
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    background: var(--ac-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .slack-sender { font-size: 11px; font-weight: 700; color: var(--ac); margin-bottom: 2px; }
+  .slack-text { font-size: 10.5px; color: var(--muted); line-height: 1.4; }
+  .slack-time { font-family: var(--mono); font-size: 8px; color: var(--muted); opacity: 0.5; margin-top: 2px; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 660px) {
+    .overview, .paths-grid, .wf-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="eyebrow">// Workflow 02 — ActiveCampaign Lead Nurture</div>
+    <h1>AI-Powered Lead Scoring<br>& Nurture Automation</h1>
+    <div class="header-meta">
+      <div class="meta-chip"><div class="meta-dot" style="background:var(--ac)"></div>ActiveCampaign Trigger</div>
+      <div class="meta-chip"><div class="meta-dot" style="background:var(--zapier)"></div>Zapier Orchestration</div>
+      <div class="meta-chip"><div class="meta-dot" style="background:var(--openai)"></div>OpenAI Scoring</div>
+      <div class="meta-chip"><div class="meta-dot" style="background:var(--slack)"></div>Slack Alerts</div>
+      <div class="meta-chip"><div class="meta-dot" style="background:var(--sheets)"></div>Google Sheets CRM</div>
+    </div>
+  </div>
+
+  <!-- Stats overview -->
+  <div class="overview">
+    <div class="ov-cell">
+      <div class="ov-num" style="color:var(--ac)">6</div>
+      <div class="ov-label">Zapier Steps</div>
+    </div>
+    <div class="ov-cell">
+      <div class="ov-num" style="color:var(--zapier)">3</div>
+      <div class="ov-label">Routing Paths</div>
+    </div>
+    <div class="ov-cell">
+      <div class="ov-num" style="color:var(--openai)">5</div>
+      <div class="ov-label">AC Sequence Emails</div>
+    </div>
+    <div class="ov-cell">
+      <div class="ov-num" style="color:var(--sheets)">4</div>
+      <div class="ov-label">Tool Integrations</div>
+    </div>
+  </div>
+
+  <!-- FLOW DIAGRAM -->
+  <div class="flow-area">
+    <div class="section-head"><h2>// Process Flow</h2></div>
+    <div class="flow-col">
+
+      <!-- Trigger -->
+      <div class="node ac-node">
+        <span style="position:absolute;top:-10px;right:16px;font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 10px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted)">STEP 1 · TRIGGER</span>
+        <div class="node-top">
+          <div class="node-icon-wrap">📬</div>
+          <div class="node-meta">
+            <div class="node-step">ActiveCampaign · Contact Trigger</div>
+            <div class="node-title">New Contact Added to List</div>
+          </div>
+        </div>
+        <div class="node-desc">When a new lead is added to the "New Leads" list in ActiveCampaign (via form, import, or API), this trigger fires and pushes contact data to Zapier.</div>
+        <div class="tags">
+          <span class="tag ac">email</span>
+          <span class="tag ac">first_name</span>
+          <span class="tag ac">last_name</span>
+          <span class="tag ac">source</span>
+          <span class="tag ac">signup_date</span>
+          <span class="tag ac">custom fields</span>
+        </div>
+      </div>
+
+      <div class="conn" style="position:relative;"><span class="conn-label">contact data passed</span></div>
+
+      <!-- Zapier webhook -->
+      <div class="node zapier-node">
+        <span style="position:absolute;top:-10px;right:16px;font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 10px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted)">STEP 2 · ZAPIER</span>
+        <div class="node-top">
+          <div class="node-icon-wrap">⚡</div>
+          <div class="node-meta">
+            <div class="node-step">Zapier · Action</div>
+            <div class="node-title">Format & Enrich Contact Data</div>
+          </div>
+        </div>
+        <div class="node-desc">Zapier receives the contact payload, formats fields, and prepares a structured prompt string using the contact's data for the AI scoring step.</div>
+        <div class="tags">
+          <span class="tag zapier">formatter step</span>
+          <span class="tag zapier">field mapping</span>
+          <span class="tag zapier">string builder</span>
+        </div>
+      </div>
+
+      <div class="conn" style="position:relative;"><span class="conn-label">formatted data</span></div>
+
+      <!-- AI Lead Scoring -->
+      <div class="node ai-node">
+        <span style="position:absolute;top:-10px;right:16px;font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 10px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted)">STEP 3 · AI</span>
+        <div class="node-top">
+          <div class="node-icon-wrap">🤖</div>
+          <div class="node-meta">
+            <div class="node-step">OpenAI · gpt-3.5-turbo</div>
+            <div class="node-title">AI Lead Scoring & Persona Detection</div>
+          </div>
+        </div>
+        <div class="node-desc">Sends contact data to ChatGPT with scoring instructions. AI evaluates lead quality, assigns a score 1–100, detects persona type, and suggests the best nurture sequence.</div>
+        <div style="margin-top:10px;margin-left:50px;background:#f0fdf8;border:1px solid #a7dfc9;border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:9px;color:#065f46;line-height:1.7;">
+          // AI returns JSON:<br>
+          { "score": 82, "persona": "decision_maker",<br>
+          &nbsp; "sequence": "high-intent-fast-track",<br>
+          &nbsp; "reason": "C-suite title, enterprise domain" }
+        </div>
+      </div>
+
+      <div class="conn" style="position:relative;"><span class="conn-label">score + persona returned</span></div>
+
+      <!-- Update AC -->
+      <div class="node ac-node">
+        <span style="position:absolute;top:-10px;right:16px;font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 10px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted)">STEP 4 · ACTIVECAMPAIGN</span>
+        <div class="node-top">
+          <div class="node-icon-wrap">✏️</div>
+          <div class="node-meta">
+            <div class="node-step">ActiveCampaign · Update Contact</div>
+            <div class="node-title">Write AI Score + Tags Back to Contact</div>
+          </div>
+        </div>
+        <div class="node-desc">Updates the contact record in ActiveCampaign with the AI-generated lead score, persona tag, and sequence assignment via custom fields.</div>
+        <div class="tags">
+          <span class="tag ac">lead_score → 82</span>
+          <span class="tag ac">persona → decision_maker</span>
+          <span class="tag ac">sequence → high-intent</span>
+        </div>
+      </div>
+
+      <div class="conn" style="position:relative;"><span class="conn-label">score written to CRM</span></div>
+
+      <!-- Decision -->
+      <div class="node decision">
+        <span style="position:absolute;top:-10px;right:16px;font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 10px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted)">STEP 5 · ROUTING</span>
+        <div class="node-top">
+          <div class="node-icon-wrap">🔀</div>
+          <div class="node-meta">
+            <div class="node-step">Zapier Paths · Conditional Logic</div>
+            <div class="node-title">Route by AI Lead Score</div>
+          </div>
+        </div>
+        <div class="node-desc">Zapier reads the AI score and branches into one of three paths to trigger the correct AC sequence and notifications.</div>
+      </div>
+
+      <!-- 3 paths -->
+      <div style="width:100%;max-width:680px;">
+        <div class="paths-label">↓ Score-Based Routing Paths ↓</div>
+        <div class="paths-grid">
+
+          <div class="path-card hot">
+            <div class="path-header">
+              <div class="path-dot"></div>
+              <div class="path-name">🔥 Hot Lead</div>
+            </div>
+            <div class="path-cond">score ≥ 70</div>
+            <div class="path-steps">
+              <div class="path-step">Add to "High-Intent Fast Track" AC sequence</div>
+              <div class="path-step">Slack alert → #sales-hot-leads</div>
+              <div class="path-step">Assign to senior sales rep in AC</div>
+              <div class="path-step">Log to Sheets: HOT tier</div>
+            </div>
+          </div>
+
+          <div class="path-card warm">
+            <div class="path-header">
+              <div class="path-dot"></div>
+              <div class="path-name">⚡ Warm Lead</div>
+            </div>
+            <div class="path-cond">score 40–69</div>
+            <div class="path-steps">
+              <div class="path-step">Add to "Standard Nurture" AC sequence</div>
+              <div class="path-step">Slack digest → #sales-pipeline</div>
+              <div class="path-step">Tag: nurture-standard</div>
+              <div class="path-step">Log to Sheets: WARM tier</div>
+            </div>
+          </div>
+
+          <div class="path-card cold">
+            <div class="path-header">
+              <div class="path-dot"></div>
+              <div class="path-name">❄️ Cold Lead</div>
+            </div>
+            <div class="path-cond">score &lt; 40</div>
+            <div class="path-steps">
+              <div class="path-step">Add to "Long-Game Drip" AC sequence</div>
+              <div class="path-step">No sales alert (automated only)</div>
+              <div class="path-step">Tag: nurture-cold</div>
+              <div class="path-step">Log to Sheets: COLD tier</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="conn" style="margin-top:14px;"><span class="conn-label">outputs written</span></div>
+
+      <!-- Final output -->
+      <div class="node output-node">
+        <span style="position:absolute;top:-10px;right:16px;font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 10px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted)">STEP 6 · OUTPUTS</span>
+        <div class="node-top">
+          <div class="node-icon-wrap">✅</div>
+          <div class="node-meta">
+            <div class="node-step">All Paths · Simultaneous Outputs</div>
+            <div class="node-title">CRM Updated · Sequence Live · Team Alerted</div>
+          </div>
+        </div>
+        <div class="node-desc">Contact now has an AI lead score, is enrolled in the correct nurture sequence, sales is notified if hot, and the lead is logged to Google Sheets for ops visibility.</div>
+        <div class="tags">
+          <span class="tag green">AC sequence active</span>
+          <span class="tag green">Sheets logged</span>
+          <span class="tag green">Slack notified</span>
+          <span class="tag green">CRM updated</span>
+        </div>
+      </div>
+
+    </div><!-- end flow-col -->
+  </div><!-- end flow-area -->
+
+  <!-- AC SEQUENCE TIMELINE -->
+  <div class="timeline">
+    <div class="section-head"><h2>// ActiveCampaign Email Sequence — Hot Lead Track</h2></div>
+    <div class="tl-row">
+      <div style="display:flex;flex-direction:column;width:100%;gap:0;">
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot">1</div></div>
+          <div class="tl-content">
+            <div class="tl-trigger">Trigger: Enrolled by Zapier on lead score ≥ 70</div>
+            <div class="tl-title">Welcome + Personalized Intro Email</div>
+            <div class="tl-desc">Sent immediately. Subject line uses first name + detected persona context. CTA: Book a discovery call.</div>
+            <span class="tl-delay">⏱ Sent: immediately</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot">2</div></div>
+          <div class="tl-content">
+            <div class="tl-trigger">Condition: If Email 1 opened</div>
+            <div class="tl-title">Case Study + Social Proof</div>
+            <div class="tl-desc">Sends a relevant case study matched to the lead's industry (via custom field). If Email 1 not opened → resend with alternate subject.</div>
+            <span class="tl-delay">⏱ Wait: 24 hours</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot">3</div></div>
+          <div class="tl-content">
+            <div class="tl-trigger">Condition: If link clicked in Email 2</div>
+            <div class="tl-title">Demo Invite / Offer</div>
+            <div class="tl-desc">Sends a personalized demo invite with calendar link. If no click → send value-add content instead (not pushy).</div>
+            <span class="tl-delay">⏱ Wait: 48 hours</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot">4</div></div>
+          <div class="tl-content">
+            <div class="tl-trigger">Trigger: If no booking after Email 3</div>
+            <div class="tl-title">Zapier Re-Score Trigger</div>
+            <div class="tl-desc">Fires a Zapier webhook → re-runs AI scoring with updated engagement data (opens, clicks). Updates lead score in AC. Moves to warm track if score drops.</div>
+            <span class="tl-delay">⏱ Wait: 72 hours</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot">5</div></div>
+          <div class="tl-content">
+            <div class="tl-trigger">Final: If still no response</div>
+            <div class="tl-title">Breakup Email + Re-Engagement Tag</div>
+            <div class="tl-desc">"Last chance" style email. If opened → keep in hot track. If ignored → tag as "re-engagement-needed" and move to 90-day drip.</div>
+            <span class="tl-delay">⏱ Wait: 5 days</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- WIREFRAMES -->
+  <div class="wf-grid">
+    <div class="section-head" style="grid-column:1/-1;"><h2>// UI Wireframes</h2></div>
+
+    <!-- AC Contact Card -->
+    <div class="wf-card">
+      <div class="wf-bar">
+        <div class="wf-circles"><div class="wf-circle"></div><div class="wf-circle"></div><div class="wf-circle"></div></div>
+        <span class="wf-bar-title">📧 ACTIVECAMPAIGN — Contact Record</span>
+      </div>
+      <div class="wf-body">
+        <div class="contact-header">
+          <div class="contact-avatar">👤</div>
+          <div>
+            <div class="contact-name">Maria Santos</div>
+            <div class="contact-email">maria@enterprise.com · VP of Operations</div>
+          </div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-label"><span>AI Lead Score</span><span style="color:var(--ac);font-weight:700;">82 / 100</span></div>
+          <div class="score-track"><div class="score-fill" style="width:82%"></div></div>
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.06em;">Applied Tags</div>
+        <div class="ac-tags-wrap">
+          <span class="ac-tag blue">lead-score-82</span>
+          <span class="ac-tag blue">persona-decision-maker</span>
+          <span class="ac-tag green">sequence-hot-track</span>
+          <span class="ac-tag orange">source-webinar</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.06em;">Active Sequence</div>
+        <div>
+          <div class="ac-seq-row"><span class="ac-seq-icon">📨</span><span>Welcome + Personalized Intro</span><span class="ac-seq-status sent">Sent</span></div>
+          <div class="ac-seq-row"><span class="ac-seq-icon">📊</span><span>Case Study — Enterprise</span><span class="ac-seq-status sent">Sent</span></div>
+          <div class="ac-seq-row"><span class="ac-seq-icon">📅</span><span>Demo Invite</span><span class="ac-seq-status queue">Queued</span></div>
+          <div class="ac-seq-row"><span class="ac-seq-icon">🔄</span><span>AI Re-Score Webhook</span><span class="ac-seq-status wait">Waiting</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zapier Steps -->
+    <div class="wf-card">
+      <div class="wf-bar">
+        <div class="wf-circles"><div class="wf-circle"></div><div class="wf-circle"></div><div class="wf-circle"></div></div>
+        <span class="wf-bar-title">⚡ ZAPIER — Zap Editor View</span>
+      </div>
+      <div class="wf-body">
+        <div class="zap-step">
+          <div class="zap-num">1</div>
+          <div class="zap-content">
+            <div class="zap-app">ActiveCampaign · Trigger</div>
+            <div class="zap-action">New Contact Added to List</div>
+            <div class="zap-detail">List: "New Leads" → triggers on add</div>
+          </div>
+          <div class="zap-status live"></div>
+        </div>
+        <div class="zap-step">
+          <div class="zap-num">2</div>
+          <div class="zap-content">
+            <div class="zap-app">Zapier · Formatter</div>
+            <div class="zap-action">Format Contact Fields</div>
+            <div class="zap-detail">Build prompt string from contact data</div>
+          </div>
+          <div class="zap-status live"></div>
+        </div>
+        <div class="zap-step">
+          <div class="zap-num">3</div>
+          <div class="zap-content">
+            <div class="zap-app">OpenAI · Action</div>
+            <div class="zap-action">Send Prompt → Score Lead</div>
+            <div class="zap-detail">Returns JSON: score, persona, sequence</div>
+          </div>
+          <div class="zap-status live"></div>
+        </div>
+        <div class="zap-step">
+          <div class="zap-num">4</div>
+          <div class="zap-content">
+            <div class="zap-app">ActiveCampaign · Action</div>
+            <div class="zap-action">Update Contact Custom Fields</div>
+            <div class="zap-detail">Write score, persona, sequence tag</div>
+          </div>
+          <div class="zap-status live"></div>
+        </div>
+        <div class="zap-step">
+          <div class="zap-num">5</div>
+          <div class="zap-content">
+            <div class="zap-app">Zapier · Paths</div>
+            <div class="zap-action">Route by Lead Score</div>
+            <div class="zap-detail">Hot ≥70 · Warm 40-69 · Cold &lt;40</div>
+          </div>
+          <div class="zap-status live"></div>
+        </div>
+        <div class="zap-step">
+          <div class="zap-num">6</div>
+          <div class="zap-content">
+            <div class="zap-app">Slack + Sheets + AC</div>
+            <div class="zap-action">Notify · Log · Enroll Sequence</div>
+            <div class="zap-detail">All 3 outputs fire in parallel</div>
+          </div>
+          <div class="zap-status live"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slack alert wireframe -->
+    <div class="wf-card">
+      <div class="wf-bar">
+        <div class="wf-circles"><div class="wf-circle"></div><div class="wf-circle"></div><div class="wf-circle"></div></div>
+        <span class="wf-bar-title">💬 SLACK — #sales-hot-leads</span>
+      </div>
+      <div class="wf-body">
+        <div class="slack-channel"># sales-hot-leads</div>
+        <div class="slack-msg">
+          <div class="slack-av">⚡</div>
+          <div>
+            <div class="slack-sender">Zapier Bot</div>
+            <div class="slack-text">🔥 <strong>HOT LEAD ALERT</strong> — Score: 82/100<br>
+            👤 Maria Santos · VP of Operations<br>
+            🏢 Enterprise.com · Source: Webinar<br>
+            🤖 Persona: Decision Maker<br>
+            📧 Sequence: High-Intent Fast Track<br>
+            <span style="color:var(--ac)">→ Assigned to: Senior Sales Rep</span></div>
+            <div class="slack-time">Today at 3:42 PM</div>
+          </div>
+        </div>
+        <div class="slack-msg">
+          <div class="slack-av" style="background:#fff7ed;">⚡</div>
+          <div>
+            <div class="slack-sender">Zapier Bot</div>
+            <div class="slack-text">⚡ Warm Lead — Score: 55/100<br>
+            James K. · Marketing Manager · SMB<br>
+            Sequence: Standard Nurture enrolled</div>
+            <div class="slack-time">Today at 3:51 PM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sheets dashboard -->
+    <div class="wf-card">
+      <div class="wf-bar">
+        <div class="wf-circles"><div class="wf-circle"></div><div class="wf-circle"></div><div class="wf-circle"></div></div>
+        <span class="wf-bar-title">📊 SHEETS — Lead Scoring Dashboard</span>
+      </div>
+      <div class="wf-body">
+        <div style="display:grid;grid-template-columns:1.4fr 0.6fr 1fr 1fr;gap:6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Contact</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Score</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Persona</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Sequence</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.6fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);align-items:center;">
+          <div style="font-size:10px;">Maria S.</div>
+          <div><span style="background:#fee2e2;color:#dc2626;border-radius:10px;padding:1px 7px;font-family:var(--mono);font-size:8px;font-weight:700;">82 🔥</span></div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">decision_maker</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">hot-track</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.6fr 1fr 1fr;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);align-items:center;">
+          <div style="font-size:10px;">James K.</div>
+          <div><span style="background:#fef3c7;color:#d97706;border-radius:10px;padding:1px 7px;font-family:var(--mono);font-size:8px;font-weight:700;">55 ⚡</span></div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">influencer</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">standard</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.6fr 1fr 1fr;gap:6px;padding:6px 0;align-items:center;">
+          <div style="font-size:10px;">Carla R.</div>
+          <div><span style="background:#ede9fe;color:#6d28d9;border-radius:10px;padding:1px 7px;font-family:var(--mono);font-size:8px;font-weight:700;">28 ❄️</span></div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">researcher</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">cold-drip</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end wf-grid -->
+
+</div>
+</body>
+</html>

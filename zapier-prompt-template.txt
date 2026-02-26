@@ -1,0 +1,117 @@
+# Zapier AI Prompt Template
+# Workflow 02 — AI Lead Scoring
+# Updated: 2026-02 — reflects actual 18-step Zap build
+# App used: AI by Zapier (auto-parses JSON — no extra Code step needed)
+
+# ─────────────────────────────────────────────
+# STEP 2 — CODE BY ZAPIER (Javascript)
+# ─────────────────────────────────────────────
+
+# INPUT DATA KEYS (add in Zapier UI before pasting code):
+# Key          → Map from Step 1 (AC Trigger)
+# firstName    → Contact First Name
+# lastName     → Contact Last Name
+# email        → Contact Email Address
+# jobTitle     → Job Title
+# company      → Company
+# leadSource   → Lead Source
+
+# JAVASCRIPT CODE:
+output = {
+  prompt: `Contact Name: ${inputData.firstName || 'Not provided'} ${inputData.lastName || ''}
+Email: ${inputData.email || 'Not provided'}
+Job Title: ${inputData.jobTitle || 'Not provided'}
+Company: ${inputData.company || 'Not provided'}
+Lead Source: ${inputData.leadSource || 'Not provided'}`
+};
+
+
+# ─────────────────────────────────────────────
+# STEP 3 — AI BY ZAPIER PROMPT
+# ─────────────────────────────────────────────
+
+You are a B2B lead scoring specialist. Evaluate the lead and return JSON only.
+No explanation, no markdown, no extra text.
+
+Scoring criteria:
+- Job title seniority: C-suite/VP/Director = higher score
+- Company domain: enterprise/known brand = higher score
+- Lead source: demo-request/referral = higher than newsletter/organic
+- Decision-maker roles score higher than practitioners
+
+[map → prompt output from Code by Zapier Step 2]
+
+Return exactly this JSON structure:
+{
+  "score": <integer 1-100>,
+  "persona": "<decision_maker|influencer|practitioner|researcher>",
+  "sequence": "<high-intent-fast-track|standard-nurture|cold-drip>",
+  "reason": "<one sentence explanation>"
+}
+
+# NOTE: AI by Zapier auto-parses JSON into separate fields:
+# Score, Persona, Sequence, Reason — map these directly in later steps.
+# No additional parser step needed.
+
+
+# ─────────────────────────────────────────────
+# STEP 5 — FILTER BY ZAPIER
+# ─────────────────────────────────────────────
+
+# Condition:
+# Contact ID (Step 4)  →  Exists  →  (leave value blank)
+# If false: Zap stops silently
+
+
+# ─────────────────────────────────────────────
+# STEP 7 — PATHS ROUTING
+# ─────────────────────────────────────────────
+
+# Path A (Hot):   Score >= 70  →  Slack + Sheets + AC Tag
+# Path B (Warm):  Score >= 40  →  Slack + Sheets + AC Tag
+# Path C (Cold):  Fallback     →  Sheets + AC Tag only (no Slack)
+
+
+# ─────────────────────────────────────────────
+# SLACK TEMPLATES
+# ─────────────────────────────────────────────
+
+# Step 9 — Hot (#sales-hot-leads):
+🔥 HOT LEAD ALERT — Score: [Score]/100
+👤 [First Name] [Last Name]  💼 [Job Title] @ [Company]
+📧 [Email]  🤖 Persona: [Persona]
+📋 Reason: [Reason]  📨 Sequence: [Sequence]
+
+# Step 13 — Warm (#sales-pipeline):
+⚡ WARM LEAD — Score: [Score]/100
+👤 [First Name] [Last Name]  💼 [Job Title] @ [Company]
+📧 [Email]  📨 Sequence: [Sequence]
+
+
+# ─────────────────────────────────────────────
+# GOOGLE SHEETS COLUMNS (Steps 10, 14, 17)
+# ─────────────────────────────────────────────
+
+# Timestamp · First Name · Last Name · Email · Job Title
+# Company · Lead Source · AI Score · AI Persona
+# AI Sequence · AI Reason · Tier (HOT/WARM/COLD)
+
+
+# ─────────────────────────────────────────────
+# AC TAGS (Steps 11, 15, 18)
+# ─────────────────────────────────────────────
+
+# Hot:  sequence-hot-track
+# Warm: sequence-standard-nurture
+# Cold: sequence-cold-drip
+
+
+# ─────────────────────────────────────────────
+# AC CUSTOM FIELDS REQUIRED
+# AC → Lists → Manage Fields → Add Field
+# ─────────────────────────────────────────────
+
+# AI Lead Score   →  Number
+# AI Persona      →  Text
+# AI Sequence     →  Text
+# AI Reason       →  Textarea

@@ -78,8 +78,8 @@ then routes them into the correct nurture sequence within seconds.
 ```
 ┌──────────────────────────────────────────────────────┐
 │  STEP 1 — ActiveCampaign                             │
-│  Trigger: New Contact  ← CHANGED from "New or Updated"│
-│  Fires ONCE on creation only — loop safe ✅          │
+│  Trigger: New Contact ← CHANGED from "New or Updated"│
+│  Fires ONCE on creation only — loop safe ✅         │ 
 └─────────────────────┬────────────────────────────────┘
                       │
 ┌─────────────────────▼────────────────────────────────┐

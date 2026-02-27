@@ -46,7 +46,7 @@ the Zap stops silently — no error, no duplicate entry.
 
 1. [Overview](#overview)
 2. [Architecture Diagram](#architecture-diagram)
-3. [Complete Zap Structure — All 18 Steps](#complete-zap-structure)
+3. [Complete Zap Structure — All 18 Steps](#complete-zap-structure) | Process Mapping → [Link]([url](https://excalidraw.com/#json=POU5irsPDNwZSJ-us4gWb,YR7-H-dzG8RkJwNnKI7big)) 
 4. [Step-by-Step Configuration](#step-by-step-configuration)
 5. [AI Prompt Engineering](#ai-prompt-engineering)
 6. [Routing Logic & Paths](#routing-logic--paths)

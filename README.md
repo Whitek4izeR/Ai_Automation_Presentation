@@ -1,3 +1,4 @@
+# Static Website https://whitek4izer.github.io/Ai_Automation_Presentation/
 # AI-Powered Lead Scoring & Nurture Automation
 ### Workflow  — ActiveCampaign + Zapier + AI by Zapier
 
